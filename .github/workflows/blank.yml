@@ -1,0 +1,36 @@
+from selenium import webdriver
+import csv
+from selenium.webdriver.common.by import By
+
+def rank():
+    options = webdriver.ChromeOptions()
+    options.add_argument("disable-gpu")
+    path = "C:\\pythonworkspace\\naver_sport\\chromedriver.exe"
+    driver = webdriver.Chrome(path, options = options)
+    url = "https://sports.news.naver.com/wfootball/record/index"
+
+    data = []
+    driver.get(url)
+    driver.implicitly_wait(3)
+    columns = driver.find_element(By.XPATH,'//*[@id="wfootballTeamRecordBody"]/table/thead/tr' )
+    data.append(columns.text.split("\n"))
+    tbody = driver.find_element(By.XPATH,'//*[@id="wfootballTeamRecordBody"]/table/tbody')
+    rows = tbody.find_elements(By.TAG_NAME,"tr")
+
+    for td in rows:
+        football_row = td.text
+        football_row_list = football_row.split("\n")
+        if len(football_row_list) !=10:
+            football_row_list.pop(1)
+        data.append(football_row_list)
+    print(data)
+
+    f = open("rank.csv","w",newline='')
+    writer = csv.writer(f)
+
+    for row in data:
+        writer.writerow(row)
+    f.close()
+
+if __name__ =="__main__":
+    rank()
